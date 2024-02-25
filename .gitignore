@@ -1,3 +1,10 @@
+## Non-standard stuff
+# Sensitive Info
+botinfo.txt
+# Unnecessary Bootstrap contents
+bootstrap
+
+## Standard Node gitignore:
 # Logs
 logs
 *.log

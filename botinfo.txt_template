@@ -1,0 +1,25 @@
+// This is a template only.  Please create a new file called "Botinfo.txt" with the correct information filled in:
+
+// Bot Config:
+username:[Account to be used by the bot]
+server:[server/web address]
+port:[port# to listen in on]
+channels:[channels to listen in on]
+
+//A completed section may look like:
+//username:twitchUser123
+//server:127.0.0.1
+//port:3420
+//channels:twitchUser123,anotherUser99
+
+// Twurple AuthProvider Config:
+// More info: https://twurple.js.org/docs/examples/chat/basic-bot.html
+
+// Retrieve from: https://dev.twitch.tv/console/apps
+client_id:
+client_secret:
+
+// Retrieve via POST Resquest after setting up Twitch Dev stuff
+access_token:
+refresh_token:
+
