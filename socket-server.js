@@ -1,4 +1,5 @@
-const fs = require('fs');
+const { readConfigFile } = require('./readConfig.js');
+
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');

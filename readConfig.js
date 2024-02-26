@@ -24,6 +24,13 @@ async function readConfigFile(filename) {
     });
 }
 
+class ConfigError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'ConfigError';
+    }
+}
+
 module.exports = {
     readConfigFile
 };

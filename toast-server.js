@@ -1,9 +1,11 @@
 // Custom config reader function:
-const { readConfigFile } = require('./configReader.js');
+const { readConfigFile } = require('./readConfig.js');
 
 // Twurple libraries:
 const { RefreshingAuthProvider } = require ('@twurple/auth');
 const { ChatClient } = require('@twurple/chat');
+//const { ApiClient } = require('@twurple/api');
+
 
 // Main app:
 async function main() {
@@ -30,24 +32,29 @@ async function main() {
         await client.connect();
         console.log("Connected!\n\n");
 
-client.onMessage((channel, username, message, twitchPayload) => {
-    console.log(`(${channel}) [${username}]: ${message}`);
-    let colorValue;
+    client.onMessage((channel, username, message, msgObject) => {
+        console.log(`(${channel}) [${username}]: ${message}`);
+        
+        const rawObjectData = msgObject._raw.split(';');
+        const msgRaw = {};
 
-    // Extract the color value from the message
-    const colorMatch = /color=(#[A-Fa-f0-9]{6})/.exec(twitchPayload);
+        for (const part of rawObjectData) {
+            const [key, value] = part.split('=');
+            msgRaw[key] = value;
+        }
 
-    // If color value is found, log it
-    if (colorMatch && colorMatch.length > 1) {
-        const colorValue = colorMatch[1];
-        console.log(`(${channel}) [${username}]: Color: ${colorValue}`);
-    } else {
-        console.log(`(${channel}) [${username}]: Color not found`);
-    }
 
-    
+        const toastify = {
+            username: msgRaw['display-name'],
+            colour: msgRaw.color,
+            message: msgObject.text,
+            emotes: msgRaw.emotes
+        };
 
-});
+        const toastPacket = JSON.stringify(toastify);
+        
+        
+    });
 
         // Proceed with the rest of your program here
         
@@ -63,13 +70,6 @@ client.onMessage((channel, username, message, twitchPayload) => {
 }
 
 main();
-
-class ConfigError extends Error {
-    constructor(message) {
-        super(message);
-        this.name = 'ConfigError';
-    }
-}
 
 class TwitchError extends Error {
     constructor(message) {
