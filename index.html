@@ -1,13 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="/css/bootstrap.css">
-        <script src="/bootstrap/dist/js/bootstrap.bundle.js"></script>
-    </head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socket.IO Client</title>
+    <script src="https://cdn.socket.io/4.1.3/socket.io.min.js"></script>
+    <script type="module">
+        import { readConfigFile } from './readConfig_browser.js';
 
-    <body>
+        async function initializeSocket() {
+            const config = await readConfigFile('botinfo.txt');
+            const socket = io(`${config.server}:${config['socket-port']}`);
 
-    </body>
+            socket.on('toastify', (toastifyData) => {
+                // Handle the received "toastify" data
+                console.log('Received toastify data:', toastifyData);
+                // Update your HTML with the received data
+                // Example: document.getElementById('someElement').innerHTML = JSON.stringify(toastifyData);
+            });
+        }
+
+        initializeSocket(); // Call the async function to start the initialization process
+    </script>
+</head>
+<body>
+    <!-- Your HTML content here -->
+</body>
 </html>

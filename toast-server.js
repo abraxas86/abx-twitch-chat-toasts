@@ -4,7 +4,17 @@ const { readConfigFile } = require('./readConfig.js');
 // Twurple libraries:
 const { RefreshingAuthProvider } = require('@twurple/auth');
 const { ChatClient } = require('@twurple/chat');
-const { ApiClient } = require('@twurple/api'); // Import HelixUserApi
+const { ApiClient } = require('@twurple/api');
+
+// Socket Server:
+const { Server } = require('socket.io');
+const http = require('http');
+
+// Web Server:
+const express = require('express');
+const path = require('path');
+const app = express();
+
 
 // Main app:
 async function main() {
@@ -13,8 +23,15 @@ async function main() {
         const config = await readConfigFile('botinfo.txt');
         const channels = config.channels.split(',');
 
+        //initiate webserver:
+        console.log("Starting web server...");
+        app.use(express.static('./'));
+        app.listen(config['http-port'], config.server, () => {
+            console.log(`Web server running on ${config.server}:${config['http-port']}`);
+        });
+
         // API Token handling:
-        console.log("Authorizing...\n");
+        console.log("Authorizing...");
         const authProvider = new RefreshingAuthProvider({
             clientId: config.client_id,
             clientSecret: config.client_secret
@@ -26,11 +43,27 @@ async function main() {
         }, ['chat']);
 
         const client = new ChatClient({ authProvider, channels: channels });
-        console.log("Connecting...\n");
+        console.log("Connecting to Twitch...");
         await client.connect();
-        console.log("Connected!\n\n");
+        console.log("Connected to Twitch!");
 
         const apiClient = new ApiClient({ authProvider }); // Initialize the API client
+
+        // Initialize HTTP server
+        const server = http.createServer();
+        const io = new Server(server);
+
+        server.listen(config['socket-port'], config.server, () => {
+            console.log(`Socket.IO server listening on ${config.server}:${config['socket-port']}\n\n`);
+        });
+
+        io.on('connection', (socket) => {
+            console.log('A user connected');
+        });
+
+        function sendPacket(packet) {
+            io.emit('toastPacket', packet); // Emit the packet to all connected clients
+        }
 
         client.onMessage(async (channel, username, message, msgObject) => {
             console.log(`(${channel}) [${username}]: ${message}`);
@@ -56,24 +89,18 @@ async function main() {
                 toastify.profilePictureUrl = user.profilePictureUrl;
             }
 
-            
             const toastPacket = JSON.stringify(toastify);
+            sendPacket(toastPacket); // Send the packet using the sendPacket function
         });
 
-        // Proceed with the rest of your program here
-
     } catch (error) {
-        if (error instanceof ConfigError) {
-            console.error('Error reading config file:', error);
-        } else if (error instanceof TwitchError) {
+        if (error instanceof TwitchError) {
             console.error('Error connecting to Twitch:', error);
         } else {
             console.error('Unknown error occurred:', error);
         }
     }
 }
-
-main();
 
 class TwitchError extends Error {
     constructor(message) {
@@ -89,38 +116,4 @@ class AuthenticationError extends Error {
     }
 }
 
-    /*
-
-    // Create a new instance of ChatClient
-    const client = new ChatClient({ authProvider, channels: ['abraxas86'] });
-
-
-    // Attempt to connect to Twitch
-    client.connect();
-
-    // Listen for successful connection
-    client.on('connected', () => {
-        console.log("Successfully connected to Twitch");
-    });
-
-    // Listen for raw messages for debug purposes
-    client.on('rawMessage', (message) => {
-        console.log("Received raw message:", message);
-    });
-
-    // Listen to chat messages
-    client.on('message', (channel, user, message) => {
-        // Extract information from chat messages
-        const chatter = user.displayName;
-        const msg = message;
-        const color = user.color;
-        const profilePicUrl = user.profilePictureUrl;
-
-        // Log the information
-        console.log(`Chatter: ${chatter}`);
-        console.log(`Message: ${msg}`);
-        console.log(`Color: ${color}`);
-        console.log(`Profile Picture URL: ${profilePicUrl}`);
-    });
-});
-*/
+main();
