@@ -5,7 +5,7 @@ async function readConfigFile(filename) {
     return new Promise((resolve, reject) => {
         fs.readFile(filename, 'utf8', (err, data) => {
             if (err) {
-                reject(err);
+                reject(new ConfigError(`Error reading config file: ${err.message}`));
                 return;
             }
             // Split the data into lines and filter out comments
