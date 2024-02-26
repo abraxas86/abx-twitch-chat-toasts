@@ -31,6 +31,7 @@ function createToast(toastData) {
   toastElement.setAttribute('role', 'alert');
   toastElement.setAttribute('aria-live', 'assertive');
   toastElement.setAttribute('aria-atomic', 'true');
+  toastElement.setAttribute('data-bs-delay', '60000');
 
   // Create toast header
   const toastHeader = document.createElement('div');
