@@ -9,12 +9,14 @@ const { ApiClient } = require('@twurple/api');
 // Socket Server:
 const { Server } = require('socket.io');
 const http = require('http');
+const cors = require('cors');
 
 // Web Server:
 const express = require('express');
 const path = require('path');
 const app = express();
 
+app.use(cors());
 
 // Main app:
 async function main() {
@@ -51,7 +53,11 @@ async function main() {
 
         // Initialize HTTP server
         const server = http.createServer();
-        const io = new Server(server);
+        const io = new Server(server, {
+            cors: {
+                origin: 'http://192.168.10.11:9002' // Allow requests from any origin
+            }
+        });
 
         server.listen(config['socket-port'], config.server, () => {
             console.log(`Socket.IO server listening on ${config.server}:${config['socket-port']}\n\n`);
@@ -62,7 +68,7 @@ async function main() {
         });
 
         function sendPacket(packet) {
-            io.emit('toastPacket', packet); // Emit the packet to all connected clients
+            io.emit('toastify', packet); // Emit the packet to all connected clients
         }
 
         client.onMessage(async (channel, username, message, msgObject) => {
