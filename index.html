@@ -16,16 +16,45 @@
 
             socket.on('toastify', (toastData) => {
                 // Handle the received "toastify" data
-                //console.log('Received toastify data:', toastData);
+                // console.log('Received toastify data:', toastData);
                 // Create a new toast using the received data
                 const objToastData = JSON.parse(toastData);
+                if (objToastData.emotes != "")
+                {
+                    const htmlMessage = parseEmotes(objToastData.message, objToastData.emotes); 
+                    objToastData.message = htmlMessage;
+                    // console.log('Updated message: ', objToastData.message);
+                } 
                 createToast(objToastData);
             });
         }
+function parseEmotes(message, emotes) {
+    const emoteArray = emotes.split('/');
+    let parsedMessage = message;
+    let offset = 0; // To keep track of the offset caused by inserting emote images
+    emoteArray.forEach(emote => {
+        const [emoteId, rangeString] = emote.split(':');
+        const ranges = rangeString.split(',');
+        ranges.forEach(range => {
+            const [start, end] = range.split('-').map(Number);
+            const emoteUrl = `https://static-cdn.jtvnw.net/emoticons/v2/${emoteId}/default/dark/1.0`;
+            const emoteImg = `<img src="${emoteUrl}" alt="${message.substring(start, end + 1)}">`;
+            parsedMessage = parsedMessage.slice(0, start + offset) + emoteImg + parsedMessage.slice(end + 1 + offset);
+            offset += emoteImg.length - (end - start + 1); // Update offset based on inserted emote image length
+        });
+    });
+    return parsedMessage;
+}
+
+
+
+
+
+ //Received toastify data: {"username":"Abraxas86","colour":"#B22222","message":"LUL beep kawaiikasePet wellzi1Dance","emotes":"425618:0-2/emotesv2_ffc5fafe2134427a8e411291df69248a:9-21/emotesv2_1b0c8a4c1be54f388a749abc0397040b:23-34","profilePictureUrl":"https://static-cdn.jtvnw.net/jtv_user_pictures/18c443db-a3ee-4eef-80b2-bab1b3845cd6-profile_image-300x300.png"}
+       
 
 function createToast(toastData) {
   // Create toast element
-    console.log(typeof toastData);
   const toastElement = document.createElement('div');
   toastElement.classList.add('toast');
   toastElement.setAttribute('role', 'alert');
@@ -63,7 +92,7 @@ function createToast(toastData) {
   // Toast body
   const toastBody = document.createElement('div');
   toastBody.classList.add('toast-body', 'fs-2');
-  toastBody.textContent = toastData.message;
+  toastBody.innerHTML = toastData.message;
   toastElement.appendChild(toastBody);
 
   // Add the toast to the container
@@ -79,12 +108,12 @@ function createToast(toastData) {
 const exampleToastData = {
   username: "Abraxas86",
   colour: "#B22222",
-  message: "asdf",
+  message: "Welcome!",
   emotes: "",
   profilePictureUrl: "https://static-cdn.jtvnw.net/jtv_user_pictures/18c443db-a3ee-4eef-80b2-bab1b3845cd6-profile_image-300x300.png"
 };
 
-createToast(exampleToastData);
+//createToast(exampleToastData);
 
 // Function to format time to HH:mm:ss
 function formatTime(date) {
