@@ -23,6 +23,14 @@ client_secret:
 access_token:
 refresh_token:
 
-// Toastify Settings:
+// Toastify Settings
+
+// maximum toasts to have displayed at once
+// (will dispose oldest to create newest)
+// recommended: 5
 maxToasts: 5
-no idea what I'm doing... adding this line to test to make sure I'm on the right branch locally lmao
+
+// Length (ms) before toast disposes itself
+// set 0 for never
+// recommended: 0
+toastDelay: 0
