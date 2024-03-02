@@ -10,46 +10,13 @@
 
     <script type="module">
         import { readConfigFile } from './readConfig_browser.js';
-        
         let config = {};
-        const { username, server, port, maxToasts, toastDelay };
-        
-         if (config.toastDelay === '' || config.toastDelay === undefined ){
-                config.toastDelay = 0;
-        }
-            
+
         async function setConfig(){
             config = await readConfigFile('botinfo.txt')
-            const invalidNumberMessage = "please ensure value is numeric."
-            
-            // validate numeric variables
-            if NaN(config['socket-port']) {
-             throw new Error(`Error with socket-port value. ${invalidNumberMessage}`);
-            }
-            
-            if NaN(config.maxToast){
-                throw new Error(`Error with maxToast value. ${invalidNumberMessage}`);
-            }
-            
-            if NaN(config.toastDelay){
-                throw new Error(`Error with toastDelay value. ${invalidNumberMessage}`);
-            }
-            
-         
-            username = config.username;
-            server = config.server;
-            port = config['socket-port'];
-            maxToasts = parseInt(Math.ceil(config.maxToasts));
-            toastDelay = parseInt(Math.ceil(config.toastDelay));
-            
-            //set object for cleanup
-            config = null;
-            
         }
 
         await setConfig();
-        
-        
 
         async function initializeSocket() {
             //const config = await readConfigFile('botinfo.txt');
@@ -94,8 +61,6 @@
 
     // Maximum number of toasts to display
     const maxToasts = parseInt(config.maxToasts);
-    
-    
     console.log(`${config.username}: ${config.maxToasts}`);
 
     // Array to track displayed toasts
