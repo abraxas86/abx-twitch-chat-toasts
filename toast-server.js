@@ -65,10 +65,57 @@ async function main() {
 
         io.on('connection', (socket) => {
             console.log('A client has connected');
+            sendConfig(config);
         });
 
         function sendPacket(packet) {
             io.emit('toastify', packet); // Emit the packet to all connected clients
+        }
+
+        function sendConfig(configData) {
+            let error = false;
+
+            // Ensure default values are set if necessary
+            if (config.toastDelay === '' || config.toastDelay === undefined) {
+                config.toastDelay = 0;
+            }
+
+            const invalidNumberMessage = "please ensure value is numeric.";
+
+            // Validate numeric variables
+            if (isNaN(parseInt(config['socket-port'], 10))) {
+                console.warn(`Error with socket-port value. ${invalidNumberMessage}`);
+                error = true;
+            }
+
+            if (isNaN(parseInt(config.maxToasts, 10))) {
+                console.warn(`Error with maxToast value. ${invalidNumberMessage}`);
+                error = true;
+            }
+
+            if (isNaN(parseInt(config.toastDelay, 10))) {
+                console.warn(`Error with toastDelay value. ${invalidNumberMessage}`);
+                error = true
+            }
+
+            if (error){
+                console.warn('Errors detected.  Please review, correct, and re-run.');
+                return; //quit on errors found
+            }
+
+            // Construct browser configuration object
+            const browserConfig = {
+                server: config.server || "",
+                port: socketPort || "",
+                maxToasts: maxToast || 5,
+                toastDelay: toastDelay || 0
+            };
+
+            console.log('Sending Packet:');
+            console.log(configData);
+
+            // Emit configuration data to the server
+            io.emit('configData', browserConfig);
         }
 
         client.onMessage(async (channel, username, message, msgObject) => {
