@@ -9,10 +9,12 @@
     <link href="./bootstrap.css" rel="stylesheet" />
 
     <script type="module">
-        
-        const config = JSON.parse('<%= JSON.stringify(config) %>');
-        console.log(config);
-
+    const config = JSON.parse(unescape('<%= config %>'));
+	console.log(config);
+    //const unescapedConfig = unescape(escapedConfig);
+    //const config = JSON.parse(unescapedConfig);
+    const socket = io(`http://${config.server}:${config.port}`);
+	
         async function initializeSocket() {
             
             socket.on('toastify', (toastData) => {
@@ -52,14 +54,12 @@
             return parsedMessage;
         }
 
-        console.log(`${config.botUser}: ${config.maxToasts}`);
-
         // Array to track displayed toasts
         let displayedToasts = [];
 
         function createToast(toastData) {
             // Check if maximum number of toasts has been reached
-            if (displayedToasts.length >= maxToasts) {
+            if (displayedToasts.length >= config.maxToasts) {
                 // Remove the oldest toast from the display
                 const oldestToast = displayedToasts.shift();
                 const toastInstance = new bootstrap.Toast(oldestToast);
@@ -79,14 +79,16 @@
             toastElement.setAttribute('role', 'alert');
             toastElement.setAttribute('aria-live', 'assertive');
             toastElement.setAttribute('aria-atomic', 'true');
-            
-            if (toastDelay > 0 ) {
+	    toastElement.setAttribute('data-bs-autohide', 'false');
+            /*
+            if (config.toastDelay > 0 ) {
                 toastElement.setAttribute('data-bs-autohide', 'false');
             }
             else {
                 toastElement.setAttribute('data-bs-autohide', 'true');
-                toastElement.setAttribute('data-bs-delay', toastDelay)
+                toastElement.setAttribute('data-bs-delay', config.toastDelay)
             }
+	   */
 
             // Create toast header
             const toastHeader = document.createElement('div');
