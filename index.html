@@ -10,19 +10,11 @@
 
     <script type="module">
         
-        let config = {}
+        const config = JSON.parse('<%= JSON.stringify(config) %>');
+        console.log(config);
 
         async function initializeSocket() {
             
-            const socket = io(`${config.server}:${config['socket-port']}`);
-
-            socket.on('configData', (receivedConfig) => {
-                        config.server = receivedConfig.server;
-                        config.port = receivedConfig.port;
-                        config.maxToasts = receivedConfig.maxToasts;
-                        config.toastDelay = receivedConfig.toastDelay;
-            }); 
-
             socket.on('toastify', (toastData) => {
                 // Handle the received "toastify" data
                 // console.log('Received toastify data:', toastData);

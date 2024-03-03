@@ -18,12 +18,26 @@ const app = express();
 
 app.use(cors());
 
+console.log("Setting config data...");
+const config = await readConfigFile('botinfo.txt');
+const channels = config.channels.split(',');
+
+app.get('/', async (req, res) => {
+    try {
+        // Render the EJS template and pass the config data to it
+        res.render('index', { config });
+    } catch (error) {
+        console.error('Error setting config data:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
 // Main app:
 async function main() {
     try {
-        console.log("Setting config data...");
-        const config = await readConfigFile('botinfo.txt');
-        const channels = config.channels.split(',');
+        //console.log("Setting config data...");
+        //const config = await readConfigFile('botinfo.txt');
+        //const channels = config.channels.split(',');
 
         //initiate webserver:
         console.log("Starting web server...");
