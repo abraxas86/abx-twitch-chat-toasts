@@ -25,9 +25,12 @@
         app.use(cors());
 
         console.log("Setting config data...");
-    
         const config = await readConfigFile('botinfo.txt');
+
+	console.log("Setting browser config data...");
         const browserConfig = setBrowserConfig(config)
+	
+	console.log("Getting channels...");
         const channels = config.channels.split(',');
 
         app.get('/', async (req, res) => {
@@ -185,8 +188,6 @@ function setBrowserConfig(configData) {
             maxToasts: configData.maxToast || 5,
             toastDelay: configData.toastDelay || 0
         };
-
-	console.log(createBrowserConfig);
 
         // Emit configuration data to the server
         return createBrowserConfig;
