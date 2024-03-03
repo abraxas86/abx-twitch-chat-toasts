@@ -64,7 +64,7 @@ async function main() {
         });
 
         io.on('connection', (socket) => {
-            console.log('A user connected');
+            console.log('A client has connected');
         });
 
         function sendPacket(packet) {

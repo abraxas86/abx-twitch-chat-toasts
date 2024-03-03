@@ -1,13 +1,13 @@
 // This is a template only.  Please create a new file called "Botinfo.txt" with the correct information filled in:
 
 // Bot Config:
-username:[Account to be used by the bot]
+botUser:[Account (username) to be used by the bot]
 server:[server/web address]
 port:[port# to listen in on]
 channels:[channels to listen in on]
 
 //A completed section may look like:
-//username:twitchUser123
+//botUser:twitchUser123
 //server:127.0.0.1
 //port:3420
 //channels:twitchUser123,anotherUser99
